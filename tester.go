@@ -13,22 +13,28 @@ func main() {
 	odpOBJ.Password = "917875221075"
 	odpOBJ.AppName = "Bajaj"
 	odpOBJ.ServiceName = "odptester"
-	odpOBJ.JWT=""
-	var r =make(map[string]string)
+	odpOBJ.JWT = ""
+
+	println("odp object initialized\n")
+	var r = make(map[string]string)
 	r["count"] = "5"
 	r["filter"] = "{\"name\":\"Test\"}"
 	r["sort"] = "id"
-	r["page"] = "45"
+	r["page"] = "2"
 
-	resp,_:=odpOBJ.GetItems(r)
-	print(len(resp))
+	println("Get Items started firing")
+	resp, status1 := odpOBJ.GetItems(r)
+	println("Get Items fired with response code:", status1, "and got ", len(resp), " items\n")
 
-	resp2,_ := odpOBJ.Get("ODP1144")
-	print(resp2["name"].(string))
+	println("Get one started firing")
+	resp2, status2 := odpOBJ.Get("ODP1144")
+	println("Get one fired with response code:", status2, "and got:", resp2["name"].(string), "\n")
 
-	resp3,status3 :=odpOBJ.CreateItem(resp2)
-	print(resp3["name"].(string))
-	print(status3)
+	testBodyMap := make(map[string]interface{})
+	testBodyMap["name"] = "jaideep"
 
+	println("Create Item started firing")
+	resp3, status3 := odpOBJ.CreateItem(testBodyMap)
+	println("Create Item fired with response code:", status3, " and created ODP object with id:", resp3["_id"].(string))
 
 }

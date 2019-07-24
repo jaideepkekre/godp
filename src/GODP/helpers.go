@@ -1,14 +1,13 @@
 package GODP
 
 import (
+	"bytes"
 	"encoding/json"
 	"log"
 	"net/http"
-	"bytes"
-	
 )
 
-func processPureResponse(resp_body []byte) map[string]interface{} {
+func processPureJSONResponse(resp_body []byte) map[string]interface{} {
 	var respBodyInterface interface{}
 	err_unmarshal := json.Unmarshal(resp_body, &respBodyInterface)
 	if err_unmarshal != nil {
@@ -20,7 +19,7 @@ func processPureResponse(resp_body []byte) map[string]interface{} {
 
 }
 
-func processArrayResponse(resp_body []byte) []interface{} {
+func processJSONArrayResponse(resp_body []byte) []interface{} {
 	var respBodyInterface interface{}
 	err_unmarshal := json.Unmarshal(resp_body, &respBodyInterface)
 	if err_unmarshal != nil {
@@ -31,8 +30,6 @@ func processArrayResponse(resp_body []byte) []interface{} {
 	return respBodyMap
 
 }
-
-
 
 func logerror(err error) {
 	if err != nil {
@@ -45,16 +42,13 @@ func GetMapfromInterface(input interface{}) map[string]interface{} {
 
 }
 
-
-
-
-func (odpOBJ *ODP) createRequest(typ string , trailURL string, payload *bytes.Buffer) *http.Request {
+func (odpOBJ *ODP) createRequest(typ string, trailURL string, payload *bytes.Buffer) *http.Request {
 	url := odpOBJ.BaseURL + trailURL
 	var req *http.Request
 	switch typ {
 	case "GET":
-		req, _ = http.NewRequest("GET", url,nil )
-	case "POST" :
+		req, _ = http.NewRequest("GET", url, nil)
+	case "POST":
 		req, _ = http.NewRequest("POST", url, payload)
 	default:
 
@@ -63,11 +57,8 @@ func (odpOBJ *ODP) createRequest(typ string , trailURL string, payload *bytes.Bu
 		odpOBJ.Login()
 	}
 	req.Header.Set("Authorization", "JWT "+odpOBJ.JWT)
+	req.Header.Set("Content-Type", "application/json")
 	return req
 
-		
-		
-	} 
-
-	
+}
 

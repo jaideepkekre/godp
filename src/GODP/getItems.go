@@ -2,11 +2,10 @@ package GODP
 
 import "io/ioutil"
 
-// import "net/http"
-
 func (odpOBJ *ODP) GetItems(queryParams map[string]string) ([]interface{}, int) {
-	trailURL := "/api/c/" + odpOBJ.AppName + "/" + odpOBJ.ServiceName
 
+	//Step 1
+	trailURL := "/api/c/" + odpOBJ.AppName + "/" + odpOBJ.ServiceName
 	req := odpOBJ.createRequest("GET", trailURL, nil)
 	q := req.URL.Query()
 	if filtr, ok := queryParams["filter"]; ok {
@@ -28,18 +27,23 @@ func (odpOBJ *ODP) GetItems(queryParams map[string]string) ([]interface{}, int) 
 	}
 
 	req.URL.RawQuery = q.Encode()
-	println(req.URL.String())
+
+	//STEP 2
 	resp, err_req := netClient.Do(req)
 	logerror(err_req)
+
+	//STEP 3 OPTIONAL
 	if resp.StatusCode == 403 {
 		odpOBJ.Login()
 		resp = nil
 		err_req = nil
 		resp, err_req = netClient.Do(req)
 	}
+
+	//STEP 4
 	bytes, err_bytes := ioutil.ReadAll(resp.Body)
 	logerror(err_bytes)
-	respMap := processArrayResponse(bytes)
+	respMap := processJSONArrayResponse(bytes)
 	return respMap, resp.StatusCode
 
 }
